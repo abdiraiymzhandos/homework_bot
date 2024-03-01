@@ -4,7 +4,6 @@ import sys
 import time
 import requests
 import telegram
-import pytest
 
 from dotenv import load_dotenv
 
