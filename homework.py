@@ -11,8 +11,6 @@ load_dotenv()
 
 stream_handler = logging.StreamHandler(sys.stdout)
 stream_handler.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s, %(levelname)s, %(message)s')
-stream_handler.setFormatter(formatter)
 logging.getLogger().addHandler(stream_handler)
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s, %(levelname)s, %(message)s')
