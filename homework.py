@@ -22,7 +22,7 @@ PRACTICUM_TOKEN = (
 TELEGRAM_TOKEN = '7012715028:AAEthinu8RGPzOnGo5S-ZmglHl7tMht-qYs'
 TELEGRAM_CHAT_ID = 5039839197
 
-RETRY_PERIOD = 6
+RETRY_PERIOD = 600
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
