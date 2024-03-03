@@ -22,7 +22,7 @@ PRACTICUM_TOKEN = (
 TELEGRAM_TOKEN = '7012715028:AAEthinu8RGPzOnGo5S-ZmglHl7tMht-qYs'
 TELEGRAM_CHAT_ID = 5039839197
 
-RETRY_PERIOD = 600
+RETRY_PERIOD = 6
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
@@ -43,13 +43,17 @@ def check_tokens():
     Переменные окружения, которые проверяются: PRACTICUM_TOKEN,
     TELELEGRAM_TOKEN, TELEGRAM_CHAT_ID.
     """
-    required_tokens = ['PRACTICUM_TOKEN', 'TELEGRAM_TOKEN', 'TELEGRAM_CHAT_ID']
-    missing_tokens = [
-        token for token in required_tokens if not os.getenv(token)]
+    missing_tokens = []
+    if not PRACTICUM_TOKEN:
+        missing_tokens.append('PRACTICUM_TOKEN')
+    if not TELEGRAM_TOKEN:
+        missing_tokens.append('TELEGRAM_TOKEN')
+    if not TELEGRAM_CHAT_ID:
+        missing_tokens.append('TELEGRAM_CHAT_ID')
 
     if missing_tokens:
         for token in missing_tokens:
-            logger.critical(f'Missing required environment variable: {token}')
+            logger.critical(f'Missing required variable: {token}')
         return False
     return True
 
