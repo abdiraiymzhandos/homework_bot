@@ -23,10 +23,6 @@ def setup_logging():
     logger.setLevel(logging.INFO)
 
 
-if __name__ == "__main__":
-    setup_logging()
-    logger.info("Логгер настроен и готов к работе.")
-
 PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
@@ -66,9 +62,9 @@ def send_message(bot, message):
     logging.debug(f'Начало отправки сообщения в Telegram: {message}')
     try:
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
-        logging.debug(f'Сообщение успешно отправлено в Telegram: {message}')
+        logger.debug(f'Сообщение успешно отправлено в Telegram: {message}')
     except TelegramError as e:
-        logging.error(f'Ошибка при отправке сообщения в Telegram: {e}')
+        logger.error(f'Ошибка при отправке сообщения в Telegram: {e}')
 
 
 def get_api_answer(timestamp):
@@ -138,7 +134,7 @@ def main():
     try:
         check_tokens()
     except EnvironmentError as e:
-        logging.critical(str(e))
+        logger.critical(e)
         sys.exit(1)
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
@@ -159,7 +155,7 @@ def main():
             timestamp = response.get('current_date', timestamp)
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
-            logging.error(message)
+            logger.error(message)
             if message != last_error_message:
                 send_message(bot, message)
                 last_error_message = message
