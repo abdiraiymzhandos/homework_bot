@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 def setup_logging():
     """Настраивает логирование для приложения."""
-    logger = logging.getLogger(__name__)
     stream_handler = logging.StreamHandler(sys.stdout)
     stream_handler.setLevel(logging.INFO)
     formatter = logging.Formatter('%(asctime)s, %(levelname)s, %(message)s')
@@ -26,12 +25,12 @@ def setup_logging():
 
 if __name__ == "__main__":
     setup_logging()
-    logger = logging.getLogger(__name__)
     logger.info("Логгер настроен и готов к работе.")
 
 PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
+
 
 RETRY_PERIOD = 600
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
@@ -43,8 +42,6 @@ HOMEWORK_VERDICTS = {
     'reviewing': 'Работа взята на проверку ревьюером.',
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
-
-last_error_time = 0
 
 
 def check_tokens():
@@ -62,15 +59,13 @@ def check_tokens():
         error_message = 'Missing required variables: {missing_tokens}'
         logger.critical(error_message)
         raise EnvironmentError(error_message)
-    return True
 
 
 def send_message(bot, message):
     """Отправляет сообщение в Telegram чат."""
-    CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
     logging.debug(f'Начало отправки сообщения в Telegram: {message}')
     try:
-        bot.send_message(chat_id=CHAT_ID, text=message)
+        bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
         logging.debug(f'Сообщение успешно отправлено в Telegram: {message}')
     except TelegramError as e:
         logging.error(f'Ошибка при отправке сообщения в Telegram: {e}')
@@ -81,13 +76,13 @@ def get_api_answer(timestamp):
     params = {'from_date': timestamp}
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
-    except requests.ConnectionError:
-        return {
-            'error': 'API request connection error',
-            'details': 'Connection error occurred while'
-                       'trying to reach the API.'}
     except requests.RequestException as e:
-        return {'error': 'API request error', 'details': str(e)}
+        error_message = (
+            f"Failed to connect to API at {ENDPOINT} with parameters {params}. "
+            "Ensure network connectivity and that the parameters are correct. "
+            "Sensitive information such as authentication tokens has been omitted from this error."
+        )
+        raise ConnectionError(error_message) from e
     if response.status_code != 200:
         raise ValueError(
             f'API returned non-200 status code: {response.status_code}')
@@ -138,9 +133,10 @@ def parse_status(homework):
 
 def main():
     """Основная логика работы бота."""
-    if not check_tokens():
-        logging.critical(
-            'One of the required environment variables is missing')
+    try:
+        check_tokens()
+    except EnvironmentError as e:
+        logging.critical(str(e))
         sys.exit(1)
 
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
@@ -165,7 +161,6 @@ def main():
             if message != last_error_message:
                 send_message(bot, message)
                 last_error_message = message
-            send_message(bot, message)
         finally:
             time.sleep(RETRY_PERIOD)
 
