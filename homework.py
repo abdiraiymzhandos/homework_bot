@@ -78,9 +78,11 @@ def get_api_answer(timestamp):
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
     except requests.RequestException as e:
         error_message = (
-            f"Failed to connect to API at {ENDPOINT} with parameters {params}. "
-            "Ensure network connectivity and that the parameters are correct. "
-            "Sensitive information such as authentication tokens has been omitted from this error."
+            f'Failed to connect to API at {ENDPOINT}'
+            f'with parameters {params}. '
+            'Ensure network connectivity and that the parameters are correct. '
+            'Sensitive information such as authentication '
+            'tokens has been omitted from this error.'
         )
         raise ConnectionError(error_message) from e
     if response.status_code != 200:
