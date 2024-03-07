@@ -13,16 +13,6 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
-def setup_logging():
-    """Настраивает логирование для приложения."""
-    stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s, %(levelname)s, %(message)s')
-    stream_handler.setFormatter(formatter)
-    logger.addHandler(stream_handler)
-    logger.setLevel(logging.INFO)
-
-
 PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
@@ -59,7 +49,7 @@ def check_tokens():
 
 def send_message(bot, message):
     """Отправляет сообщение в Telegram чат."""
-    logging.debug(f'Начало отправки сообщения в Telegram: {message}')
+    logger.debug(f'Начало отправки сообщения в Telegram: {message}')
     try:
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
         logger.debug(f'Сообщение успешно отправлено в Telegram: {message}')
