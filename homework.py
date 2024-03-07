@@ -11,7 +11,11 @@ from telegram import TelegramError
 load_dotenv()
 
 logger = logging.getLogger(__name__)
-
+stream_handler = logging.StreamHandler(sys.stdout)
+stream_handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s, %(levelname)s, %(message)s')
+stream_handler.setFormatter(formatter)
+logger.addHandler(stream_handler)
 
 PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
